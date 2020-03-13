@@ -49,9 +49,6 @@ if __name__ == '__main__':
     
     '''
     
-    #trainFrame = data_train[['Pclass', 'SibSp', 'Parch', 'Fare']]
-    #testFrame = data_test[['Pclass', 'SibSp', 'Parch', 'Fare']]
-    
     
 
     '''

@@ -16,6 +16,8 @@ import os
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 import graphviz
+import pathlib
+
 
 
 PATH = "../input"
@@ -39,6 +41,7 @@ if __name__ == '__main__':
     #Get the data from CSV file
     data_train = bn_readCSVFile(FILETRAIN)
     data_test = bn_readCSVFile(FILETEST)
+    
     
     
     '''

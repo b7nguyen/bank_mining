@@ -23,8 +23,20 @@ import pathlib
 PATH = "../input"
 FILETRAIN = "/bank-additional-full.csv"
 FILETEST = "/bank-additional-full.csv"
+#%%
+'''All functions should go below this line'''
+
+
+
+
+
+
+
 
 #%%
+'''All functions should go about this line'''
+
+
 if __name__ == '__main__':
     X_train_ID = 0
     X_train = 0

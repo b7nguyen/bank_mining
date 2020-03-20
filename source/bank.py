@@ -13,7 +13,7 @@ Get Library
 import pandas as pd
 import numpy as np
 import os
-import graphviz
+'''import graphviz'''
 import pathlib
     
 from sklearn.tree import DecisionTreeClassifier
@@ -85,7 +85,7 @@ def oneHot(data):
 
 
 #%%
-'''All functions should go about this line'''
+'''All functions should go above this line'''
 
 
 if __name__ == '__main__':
@@ -101,6 +101,16 @@ if __name__ == '__main__':
     
     '''Get the data from CSV file'''
     data = readCSVFile(FILETRAIN)
+
+    print (data.info())
+
+    ''' Convert data into dataframe'''
+    df = pd.DataFrame(data)
+
+    ''' Examine number of unique values in each column'''
+
+    print(df.nunique(axis=0,dropna=True))
+
 
     '''
     Set the data to be trained and target class 

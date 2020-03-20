@@ -21,9 +21,9 @@ from sklearn.preprocessing import LabelEncoder
 
 
 
-PATH = "C:/Users/ilear/Documents/Coding/Data Mining/Data mining practicum/Assignment 4/My datasets/"
-FILETRAIN = "bank-additional-full-sep.csv"
-FILETEST = "bank-additional-full-sep.csv"
+PATH = "C:/Users/ilear/Documents/GitHub/bank_mining/input"
+FILETRAIN = "/bank-additional-full.csv"
+FILETEST = "/bank-additional-full.csv"
 TARGET_CLASS = "y"
 #%%
 '''All functions should go below this line'''
@@ -97,15 +97,15 @@ if __name__ == '__main__':
     data = pd.DataFrame()
     
     
-    '''Get the data from CSV file'''
-    data = readCSVFile(FILETRAIN)
+'''Get the data from CSV file'''
+data = readCSVFile(FILETRAIN)
     
 print (data.info())
 
-col_header = list(data.columns)
-print (col_header)
-
+''' Convert data into dataframe'''
 df = pd.DataFrame(data)
+
+''' Examine number of unique values in each column'''
 
 print(df.nunique(axis=0,dropna=True))
     

@@ -99,41 +99,58 @@ if __name__ == '__main__':
     
     '''Get the data from CSV file'''
     data = readCSVFile(FILETRAIN)
-print (data.head(n=5))
+    
+print (data.info())
+
+col_header = list(data.columns)
+print (col_header)
+
+df = pd.DataFrame(data)
+
+print(df.nunique(axis=0,dropna=True))
+    
+
+''' Convert relevant attributes into binary'''
+
+
+
+
+
+
 
 
 '''
     Set the data to be trained and target class 
     
-'''
+
     
 target = data[TARGET_CLASS]
 data = data.drop([TARGET_CLASS], 1)
     
 
-'''
+
 @ -68,13 +115,23 @@ if __name__ == '__main__':
     seperate test set 
-'''
+
     
 X_train, X_test, y_train, y_test = splitData(data, target, .3)
     
     
-'''
+
     One hot encoder
-'''
+
 data = oneHot(data)
     
-print (data.head(n=5))
-    
-'''
+print (data.info())
+
+
     Train and evaluate decision tree 
     cross_score = bn_decisionTree(trainFrame, y_train)
     cross_score = decisionTree(trainFrame, y_train)
-    '''
+
     
 
 decisionTree(data, target)
-    
+    '''
     
     

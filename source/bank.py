@@ -106,6 +106,10 @@ if __name__ == '__main__':
 
     ''' Convert data into dataframe'''
     df = pd.DataFrame(data)
+    
+    '''show the first five rows'''
+    
+    print (df.head)
 
     ''' Examine number of unique values in each column'''
 

@@ -19,7 +19,7 @@ import pathlib
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_val_score
 from sklearn import tree
-from sklearn.tree.export import export_text
+#from sklearn.tree.export import export_text
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 

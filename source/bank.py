@@ -15,6 +15,8 @@ import numpy as np
 import os
 '''import graphviz'''
 import pathlib
+import seaborn as sns
+import matplotlib.pyplot as plt
     
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_val_score
@@ -98,7 +100,7 @@ if __name__ == '__main__':
     target = 0    
     data = pd.DataFrame()
     
-    
+#%%    
     '''Get the data from CSV file'''
     data = readCSVFile(FILETRAIN)
 
@@ -107,42 +109,66 @@ if __name__ == '__main__':
     ''' Convert data into dataframe'''
     df = pd.DataFrame(data)
     
-    '''show the first five rows'''
+    print("List of column headers and counts of unique values", "\n",df.nunique(axis=0,dropna=True))
+
+    ''' Extract the categorical variables to a new dataframe'''
+    cat_var = df.select_dtypes(include=['object'])
     
-    print (df.head)
+    ''' Remove the Class attribute from the dataframe'''
+    cat_var2 = cat_var.drop(['y'], axis = 1)
+    print ("Dataframe of categorical variables", "\n",cat_var2.head())
+   
+    print ("List of missing values in each column", "\n", cat_var2.isnull().sum())
+   
+    '''Create/print a list of column headers'''
+    cat_col= list(cat_var2.columns.values)
+    cat_columns = pd.Series(cat_col)
+    print(cat_columns)
+  
+    fig, axs = plt.subplots(2, 5, sharex=False, sharey=False, figsize=(20, 20))       
+    
+    counter = 0
+    for x in cat_columns:
+        col_name = x
+        col_val = cat_var2[x].value_counts()
+        plot_position_x = counter // 5
+        plot_position_y = counter % 5
+        x_pos = np.arange(len(col_val))
+        axs[plot_position_x,plot_position_y].bar(x_pos,col_val.values,tick_label=col_val.index)
+        axs[plot_position_x,plot_position_y].set_title(col_name)
+        for tick in axs[plot_position_x,plot_position_y].get_xticklabels():tick.set_rotation(45)
+        counter += 1
+    plt.show()
+    
+#%%    
 
-    ''' Examine number of unique values in each column'''
-
-    print(df.nunique(axis=0,dropna=True))
-
-
-    '''
+    
     Set the data to be trained and target class 
-    '''
+    
     
     target = data[TARGET_CLASS]
     data = data.drop([TARGET_CLASS], 1)
     
 
-    '''
+    
     Split the data to be trained and tested. This is not required if given a 
     seperate test set 
-    '''
+    
     
     X_train, X_test, y_train, y_test = splitData(data, target, .3)
     
     
-    '''
+  
     One hot encoder
-    '''
+   
     data = oneHot(data)
     
     
     
-    '''
+
     Train and evaluate decision tree 
     cross_score = decisionTree(trainFrame, y_train)
-    '''
+    
     
     decisionTree(data, target)
     
@@ -167,5 +193,5 @@ if __name__ == '__main__':
     
     #modelLR(test, train)
     
-    
+    '''
     

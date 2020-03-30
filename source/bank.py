@@ -15,6 +15,8 @@ import numpy as np
 import os
 '''import graphviz'''
 import pathlib
+import seaborn as sns
+import matplotlib.pyplot as plt
     
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_val_score
@@ -131,7 +133,7 @@ if __name__ == '__main__':
     target = 0    
     data = pd.DataFrame()
     
-    
+#%%    
     '''Get the data from CSV file'''
     data = readCSVFile(FILETRAIN)
 
@@ -146,32 +148,33 @@ if __name__ == '__main__':
     
     
     '''
+
     Set the data to be trained and target class 
-    '''
+    
     
     target = data[TARGET_CLASS]
     data = data.drop([TARGET_CLASS], 1)
     
 
-    '''
+    
     Split the data to be trained and tested. This is not required if given a 
     seperate test set 
-    '''
+    
     
     X_train, X_test, y_train, y_test = splitData(data, target, .3)
     
     
-    '''
+  
     One hot encoder
-    '''
+   
     data = oneHot(data)
     
     
     
-    '''
+
     Train and evaluate decision tree 
     cross_score = decisionTree(trainFrame, y_train)
-    '''
+    
     
     decisionTree(data, target)
     
@@ -196,5 +199,5 @@ if __name__ == '__main__':
     
     #modelLR(test, train)
     
-    
+    '''
     

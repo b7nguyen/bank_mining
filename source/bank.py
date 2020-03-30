@@ -25,6 +25,10 @@ from sklearn import tree
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
 
 
 
@@ -84,10 +88,39 @@ def oneHot(data):
     
     return data
 
+#%%
+
+def showCategoricalData(df):
+    #Extract the categorical variables to a new dataframe
+    cat_var = df.select_dtypes(include=['object'])
+
+    #Remove the Class attribute from the dataframe
+    cat_var2 = cat_var.drop(['y'], axis = 1)
+
+    #Create a list of column headers
+    cat_col= list(cat_var2.columns.values)
+    cat_columns = pd.Series(cat_col)
+
+    fig, axs = plt.subplots(2, 5, sharex=False, sharey=False, figsize=(20, 20))       
+
+    counter = 0
+    for x in cat_columns:
+        col_name = x
+        col_val = cat_var2[x].value_counts()
+        plot_position_x = counter // 5
+        plot_position_y = counter % 5
+        x_pos = np.arange(len(col_val))
+        axs[plot_position_x,plot_position_y].bar(x_pos,col_val.values,tick_label=col_val.index)
+        axs[plot_position_x,plot_position_y].set_title(col_name)
+        for tick in axs[plot_position_x,plot_position_y].get_xticklabels():tick.set_rotation(45)
+        counter += 1
+    plt.show()
 
 
 #%%
 '''All functions should go above this line'''
+
+
 
 
 if __name__ == '__main__':
@@ -109,40 +142,13 @@ if __name__ == '__main__':
     ''' Convert data into dataframe'''
     df = pd.DataFrame(data)
     
-    print("List of column headers and counts of unique values", "\n",df.nunique(axis=0,dropna=True))
+    
+    '''Show missing data'''
+    showCategoricalData(data)
+    
+    
+    '''
 
-    ''' Extract the categorical variables to a new dataframe'''
-    cat_var = df.select_dtypes(include=['object'])
-    
-    ''' Remove the Class attribute from the dataframe'''
-    cat_var2 = cat_var.drop(['y'], axis = 1)
-    print ("Dataframe of categorical variables", "\n",cat_var2.head())
-   
-    print ("List of missing values in each column", "\n", cat_var2.isnull().sum())
-   
-    '''Create/print a list of column headers'''
-    cat_col= list(cat_var2.columns.values)
-    cat_columns = pd.Series(cat_col)
-    print(cat_columns)
-  
-    fig, axs = plt.subplots(2, 5, sharex=False, sharey=False, figsize=(20, 20))       
-    
-    counter = 0
-    for x in cat_columns:
-        col_name = x
-        col_val = cat_var2[x].value_counts()
-        plot_position_x = counter // 5
-        plot_position_y = counter % 5
-        x_pos = np.arange(len(col_val))
-        axs[plot_position_x,plot_position_y].bar(x_pos,col_val.values,tick_label=col_val.index)
-        axs[plot_position_x,plot_position_y].set_title(col_name)
-        for tick in axs[plot_position_x,plot_position_y].get_xticklabels():tick.set_rotation(45)
-        counter += 1
-    plt.show()
-    
-#%%    
-
-    
     Set the data to be trained and target class 
     
     
@@ -174,7 +180,7 @@ if __name__ == '__main__':
     
     
     
-
+    
     
     
     

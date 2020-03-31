@@ -82,7 +82,7 @@ def decisionTree(X_train, y_train):
 
 def oneHot(data):
     #TBD
-    
+
     obj_df = data.select_dtypes('object')
     data = pd.get_dummies(data, columns=obj_df.columns)
     
@@ -115,6 +115,8 @@ def showCategoricalData(df):
         for tick in axs[plot_position_x,plot_position_y].get_xticklabels():tick.set_rotation(45)
         counter += 1
     plt.show()
+    
+    
 
 
 #%%
@@ -143,7 +145,7 @@ if __name__ == '__main__':
     df = pd.DataFrame(data)
     
     
-    '''Show missing data'''
+    '''Show frequency of categorical attributes'''
     showCategoricalData(data)
     
     

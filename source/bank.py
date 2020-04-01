@@ -29,6 +29,11 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
+STATE_QUIT = -1
+STATE_MAIN= 0
+STATE_CLASSIFY = 1
+STATE_VISUALIZE = 2
+
 
 
 
@@ -62,10 +67,17 @@ def readCSVFile(filename):
 
 #%%
     
-def decisionTree(X_train, y_train):
+def decisionTree(data):
     
     cross_score = 0
     n_folds = 10
+    
+    target = data[TARGET_CLASS]
+    data = data.drop([TARGET_CLASS], 1)
+    data = oneHot(data)
+    X_train, X_test, y_train, y_test = splitData(data, target, .3)
+    
+    
     
     dt = DecisionTreeClassifier(criterion='gini', min_samples_leaf=20)
     cross_score = cross_val_score(estimator=dt, 
@@ -74,7 +86,10 @@ def decisionTree(X_train, y_train):
                                   cv=n_folds
                                   )
     cross_score = round( (sum(cross_score[:])/cross_score.size) * 100, 2)
-    print(f'{n_folds}-Cross Validation Score is {cross_score}')
+    
+    clear_screen()
+    print(f'{n_folds}-Cross Validation Score is {cross_score}\n')
+    input('Press enter to continue')
 
     
 
@@ -114,17 +129,100 @@ def showCategoricalData(df):
         axs[plot_position_x,plot_position_y].set_title(col_name)
         for tick in axs[plot_position_x,plot_position_y].get_xticklabels():tick.set_rotation(45)
         counter += 1
-    plt.show()
+        
     
+    plt.show()
     
 
 
 #%%
-'''All functions should go above this line'''
 
 
 
+def showMainMenu(state):
+    clear_screen()
+    
+    if (state == STATE_MAIN):
+        print('a) Classify')
+        print('b) Visualize')
+        print('q) Quit')
+               
+        
+    getInput = input('What would you like to do? ') 
+    
+    if (getInput == 'a'):
+        state = STATE_CLASSIFY
+    elif (getInput == 'b'):
+        state = STATE_VISUALIZE
+    elif(getInput == 'q'):
+        state = STATE_QUIT
+        
+    return state
+    
+#%%
 
+def showClassifyMenu(state, data):
+    clear_screen()
+    
+    print('a) Decision Tree')
+    print('b) Naive Bayes')
+    print('q) Quit')
+        
+    getInput = input('What classifier would you like to model: ') 
+    clear_screen()
+    
+    if(getInput.lower() == 'a'):
+        decisionTree(data)
+    
+    
+    state = STATE_MAIN
+        
+    return state
+    
+#%%
+
+def showVisualizeMenu(state, data):
+    clear_screen()
+    df = data
+
+    
+    print('a) Visualize Nominal Frequency')
+    print('b) Show head of dataframe')
+    print('q) Quit')
+    
+    getInput = input('How would you like to visualize the data? ')  
+    
+    clear_screen()
+    
+    if(getInput.lower() == 'a'):
+        showCategoricalData(df)
+    elif(getInput.lower() == 'b'):
+        showHead(df)
+        
+    
+    
+    state = STATE_MAIN
+    
+    return state
+
+#%%
+def showHead(data):
+    clear_screen()
+    print(data.head)
+    input('Press Enter to continue')
+
+
+
+#%%
+def clear_screen():
+    #os.system("cls" if os.name == "nt" else "clear")
+    print("\n"*100)
+
+#%%
+
+
+
+#All functions should go above this line
 if __name__ == '__main__':
     X_train_ID = 0
     X_train = 0
@@ -133,60 +231,29 @@ if __name__ == '__main__':
     X_test = 0
     y_test = 0
     target = 0    
+    state = STATE_MAIN
+    
     data = pd.DataFrame()
     
-#%%    
+
     '''Get the data from CSV file'''
     data = readCSVFile(FILETRAIN)
+    
+    clear_screen()
 
-    print (data.info())
+    while(True):
+        
+        if(state == STATE_MAIN):
+            state = showMainMenu(state)
+        if(state == STATE_CLASSIFY):
+            state = showClassifyMenu(state, data)
+        elif(state == STATE_VISUALIZE):
+            state = showVisualizeMenu(state, data)
+        else:
+            break
+            
 
-    ''' Convert data into dataframe'''
-    df = pd.DataFrame(data)
-    
-    
-    '''Show frequency of categorical attributes'''
-    showCategoricalData(data)
-    
-    
-    '''
 
-    Set the data to be trained and target class 
-    
-    
-    target = data[TARGET_CLASS]
-    data = data.drop([TARGET_CLASS], 1)
-    
-
-    
-    Split the data to be trained and tested. This is not required if given a 
-    seperate test set 
-    
-    
-    X_train, X_test, y_train, y_test = splitData(data, target, .3)
-    
-    
-  
-    One hot encoder
-   
-    data = oneHot(data)
-    
-    
-    
-
-    Train and evaluate decision tree 
-    cross_score = decisionTree(trainFrame, y_train)
-    
-    
-    decisionTree(data, target)
-    
-    
-    
-    
-    
-    
-    
-    #X_train_ID, X_train, y_train, X_test_ID, X_test = setFrame(test, train)
     
     
     
@@ -197,9 +264,4 @@ if __name__ == '__main__':
 
     
     
-    
-    
-    #modelLR(test, train)
-    
-    '''
     

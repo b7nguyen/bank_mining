@@ -112,16 +112,17 @@ def showCategoricalData(df):
     #Remove the Class attribute from the dataframe
     cat_var2 = cat_var.drop(['y'], axis = 1)
 
-    #Create a list of column headers
+    #Create a Series with column headers
     cat_col= list(cat_var2.columns.values)
     cat_columns = pd.Series(cat_col)
-
+    #Generate a 2 x 5 plot grid
     fig, axs = plt.subplots(2, 5, sharex=False, sharey=False, figsize=(20, 20))       
 
     counter = 0
     for x in cat_columns:
         col_name = x
-        col_val = cat_var2[x].value_counts()
+        col_val = cat_var2[col_name].value_counts()
+        #Define x,y position of each subplot for each column 
         plot_position_x = counter // 5
         plot_position_y = counter % 5
         x_pos = np.arange(len(col_val))
@@ -133,7 +134,31 @@ def showCategoricalData(df):
     
     plt.show()
     
-
+#%%
+def showHistograms(df):
+    #Extract the numeric variables to a new dataframe
+    num_var = df.select_dtypes(include=['number'])
+    
+    #Create a Series with column headers
+    num_col= list(num_var.columns.values)
+    num_series = pd.Series(num_col)
+    
+    #Generate a 2 x 5 plot grid
+    fig, axs = plt.subplots(2, 5, sharex=False, sharey=False, figsize=(30, 10))       
+    #Create histogram for each column
+    counter = 0
+    for x in num_series:
+        col_name = x
+        #Define x,y position of each subplot for each column 
+        plot_position_x = counter // 5
+        plot_position_y = counter % 5
+        axs[plot_position_x,plot_position_y].hist(num_var[col_name])
+        axs[plot_position_x,plot_position_y].set_title(col_name)
+        
+        counter += 1
+        
+    
+    plt.show()
 
 #%%
 
@@ -187,7 +212,8 @@ def showVisualizeMenu(state, data):
 
     
     print('a) Visualize Nominal Frequency')
-    print('b) Show head of dataframe')
+    print('b) Visualize Numeric Attribute Histograms')
+    print('c) Show head of dataframe')
     print('q) Quit')
     
     getInput = input('How would you like to visualize the data? ')  
@@ -197,6 +223,8 @@ def showVisualizeMenu(state, data):
     if(getInput.lower() == 'a'):
         showCategoricalData(df)
     elif(getInput.lower() == 'b'):
+        showHistograms(df)
+    elif(getInput.lower() == 'c'):
         showHead(df)
         
     

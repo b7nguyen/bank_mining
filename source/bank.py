@@ -115,20 +115,28 @@ def showCategoricalData(df):
     #Create a Series with column headers
     cat_col= list(cat_var2.columns.values)
     cat_columns = pd.Series(cat_col)
+    
     #Generate a 2 x 5 plot grid
     fig, axs = plt.subplots(2, 5, sharex=False, sharey=False, figsize=(20, 20))       
 
     counter = 0
+    
+    #Create a frequency graph for each nominal attribute column 
     for x in cat_columns:
         col_name = x
         col_val = cat_var2[col_name].value_counts()
+        
         #Define x,y position of each subplot for each column 
         plot_position_x = counter // 5
         plot_position_y = counter % 5
         x_pos = np.arange(len(col_val))
-        axs[plot_position_x,plot_position_y].bar(x_pos,col_val.values,tick_label=col_val.index)
+        
+        #Create frequency graph of each unique val in the column
+        axs[plot_position_x,plot_position_y].bar(x_pos,col_val.values,
+                                                 tick_label=col_val.index)
         axs[plot_position_x,plot_position_y].set_title(col_name)
-        for tick in axs[plot_position_x,plot_position_y].get_xticklabels():tick.set_rotation(45)
+        for tick in axs[plot_position_x,plot_position_y].get_xticklabels():
+            tick.set_rotation(45)
         counter += 1
         
     
@@ -145,13 +153,17 @@ def showHistograms(df):
     
     #Generate a 2 x 5 plot grid
     fig, axs = plt.subplots(2, 5, sharex=False, sharey=False, figsize=(30, 10))       
-    #Create histogram for each column
+    
+    #Create histogram for each numeric attribute column
     counter = 0
     for x in num_series:
         col_name = x
+        
         #Define x,y position of each subplot for each column 
         plot_position_x = counter // 5
         plot_position_y = counter % 5
+        
+        #Create histogram for the column 
         axs[plot_position_x,plot_position_y].hist(num_var[col_name])
         axs[plot_position_x,plot_position_y].set_title(col_name)
         

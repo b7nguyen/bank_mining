@@ -56,14 +56,10 @@ def splitData(data, target, test_size):
     
 #%%
 
-
 def readCSVFile(filename):
     
     file = PATH + filename
     return (pd.read_csv(file))
-
-
-
 
 #%%
     
@@ -90,8 +86,6 @@ def decisionTree(data):
     clear_screen()
     print(f'{n_folds}-Cross Validation Score is {cross_score}\n')
     input('Press enter to continue')
-
-    
 
 #%%
 
@@ -173,8 +167,6 @@ def showHistograms(df):
     plt.show()
 
 #%%
-
-
 
 def showMainMenu(state):
     clear_screen()
@@ -264,14 +256,7 @@ def clear_screen():
 
 #All functions should go above this line
 if __name__ == '__main__':
-    X_train_ID = 0
-    X_train = 0
-    y_train = 0
-    X_test_ID = 0
-    X_test = 0
-    y_test = 0
-    target = 0    
-    state = STATE_MAIN
+
     
     data = pd.DataFrame()
     
@@ -279,13 +264,14 @@ if __name__ == '__main__':
     '''Get the data from CSV file'''
     data = readCSVFile(FILETRAIN)
     
+    state = STATE_MAIN
     clear_screen()
 
     while(True):
         
         if(state == STATE_MAIN):
             state = showMainMenu(state)
-        if(state == STATE_CLASSIFY):
+        elif(state == STATE_CLASSIFY):
             state = showClassifyMenu(state, data)
         elif(state == STATE_VISUALIZE):
             state = showVisualizeMenu(state, data)
@@ -294,14 +280,6 @@ if __name__ == '__main__':
             
 
 
-    
-    
-    
-   
-    
-    
-    
-
-    
+  
     
     

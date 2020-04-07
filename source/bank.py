@@ -185,6 +185,36 @@ def showCategoricalData(df):
     plt.show()
     
 #%%
+def showScatterPlot(df):
+    #Extract numeric variables to a new dataframe
+    num_var = df.select.dtypes(includes=['number'])
+    
+    #Create a Series with column headers
+    num_col= list(num_var.columns.values)
+    num_series = pd.Series(num_col)
+    #MK: Please expalin this code
+    
+    #Generate a 2 x 5 plot grid
+    fig, axs = plt.subplots(5, 5, sharex=False, sharey=False, figsize=(30, 10))
+    
+    #Create a Scatterplot for each column (I think?)
+    counter = 0
+    for x in num_series:
+        col_name = x
+        #Define x,y position of each subplot for each column 
+        plot_position_x = counter // 5
+        plot_position_y = counter % 5
+        axs[plot_position_x,plot_position_y].sns.pairplot(num_var[col_name])
+        axs[plot_position_x,plot_position_y].set_title(col_name)
+        
+        counter += 1
+        
+    
+    plt.show()
+   
+    
+    
+#%%
 def showHistograms(df):
     #Extract the numeric variables to a new dataframe
     num_var = df.select_dtypes(include=['number'])
@@ -220,6 +250,9 @@ def showMainMenu(state):
     clear_screen()
     
     if (state == STATE_MAIN):
+        print('Machine Learning using Classification on a Bank Marketing Dataset')
+        print('Business Objective: Predict the outcome of a marketing campaign
+              'from customers attributes')
         print('a) Classify')
         print('b) Visualize')
         print('c) Pre-Process Data')

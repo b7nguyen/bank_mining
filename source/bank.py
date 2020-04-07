@@ -17,7 +17,7 @@ import os
 import pathlib
 import seaborn as sns
 import matplotlib.pyplot as plt
-    
+from imblearn.over_sampling import SMOTENC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_val_score
 from sklearn import tree
@@ -33,6 +33,7 @@ STATE_QUIT = -1
 STATE_MAIN= 0
 STATE_CLASSIFY = 1
 STATE_VISUALIZE = 2
+STATE_PREPROCESS = 3
 
 
 
@@ -60,7 +61,53 @@ def readCSVFile(filename):
     
     file = PATH + filename
     return (pd.read_csv(file))
+#%%
+def reshape_data(data):
+    dataset = data.values
+    #Defining X as all columns except the last column
+    X = dataset[:, :-1]
+    
+    #Defining y as all rows in last column
+    y = dataset[:,-1]
+    
+    #Restructuring y to be a column
+    y = y.reshape((len(y),1))
+    return X,y
 
+#%%
+#NEEDS to be generalized- categorical feature indices specifically
+def SMOTE_cat(data):
+    X, y = reshape_data(data)
+    
+    X_train, X_test, y_train, y_test = splitData(X,y, test_size= .33)
+        
+    sm = SMOTENC(categorical_features=[1,2,3,4,5,6,7,8,9,14],random_state= 1,
+             sampling_strategy ='minority') 
+    X_train_smote, y_train_smote = sm.fit_sample(X_train, y_train.ravel())
+    
+    print("Before SMOTE, counts of label 'yes': {}".format(sum(y_train 
+                                                                 == 'yes')))
+    print("After SMOTE, the shape of X_train: ", X_train_smote.shape) 
+    print("After SMOTE, the shape of y_train: ", y_train_smote.shape)  
+    print("After SMOTE, counts of Class attr 'Yes': ", sum(y_train_smote 
+                                                           == 'yes'))
+    print("After SMOTE, counts of Class attr 'No': ", sum(y_train_smote 
+                                                          == 'no'))
+    
+    print('\n\na) Go back to main menu')
+    print('b) Go back to pre-processing menu')
+    print('q) Quit')
+    
+    getInput = input('What would you like to do next: ')  
+    
+    if(getInput.lower() == 'a'):
+        state = STATE_MAIN
+    elif(getInput.lower() == 'b'):
+        state = STATE_PREPROCESS
+        showPreProcessMenu(state,data)
+        
+    return state
+        
 #%%
     
 def decisionTree(data):
@@ -87,6 +134,7 @@ def decisionTree(data):
     print(f'{n_folds}-Cross Validation Score is {cross_score}\n')
     input('Press enter to continue')
 
+
 #%%
 
 def oneHot(data):
@@ -94,7 +142,7 @@ def oneHot(data):
 
     obj_df = data.select_dtypes('object')
     data = pd.get_dummies(data, columns=obj_df.columns)
-    
+    print(data.head())
     return data
 
 #%%
@@ -174,6 +222,7 @@ def showMainMenu(state):
     if (state == STATE_MAIN):
         print('a) Classify')
         print('b) Visualize')
+        print('c) Pre-Process Data')
         print('q) Quit')
                
         
@@ -183,6 +232,8 @@ def showMainMenu(state):
         state = STATE_CLASSIFY
     elif (getInput == 'b'):
         state = STATE_VISUALIZE
+    elif (getInput == 'c'):
+        state = STATE_PREPROCESS
     elif(getInput == 'q'):
         state = STATE_QUIT
         
@@ -236,6 +287,33 @@ def showVisualizeMenu(state, data):
     state = STATE_MAIN
     
     return state
+#%%
+def showPreProcessMenu(state, data):
+    clear_screen()
+        
+    print('a) Balance the dataset with categorical values using SMOTENC')
+    print('b) Observe outlier boxplots')
+    print('c) One-hot encode all columns')
+    print('q) Quit')
+    
+    getInput = input('How would you like to pre-process the data? ')  
+    
+    clear_screen()
+    
+    if(getInput.lower() == 'a'):
+        SMOTE_cat(data)
+    elif(getInput.lower() == 'b'):
+        showHistograms(df)
+    elif(getInput.lower() == 'c'):
+        onehot(data)
+        
+    
+    
+    state = STATE_MAIN
+    
+    return state
+ 
+
 
 #%%
 def showHead(data):
@@ -275,6 +353,8 @@ if __name__ == '__main__':
             state = showClassifyMenu(state, data)
         elif(state == STATE_VISUALIZE):
             state = showVisualizeMenu(state, data)
+        elif(state == STATE_PREPROCESS):
+             state = showPreProcessMenu(state,data)
         else:
             break
             

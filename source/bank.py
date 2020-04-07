@@ -251,8 +251,7 @@ def showMainMenu(state):
     
     if (state == STATE_MAIN):
         print('Machine Learning using Classification on a Bank Marketing Dataset')
-        print('Business Objective: Predict the outcome of a marketing campaign
-              'from customers attributes')
+        print('Business Objective: Predict the outcome of a marketing campaign from customers attributes')
         print('a) Classify')
         print('b) Visualize')
         print('c) Pre-Process Data')

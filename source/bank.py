@@ -24,6 +24,7 @@ from sklearn import tree
 #from sklearn.tree.export import export_text
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+from decorators import ml_init
 
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -109,7 +110,8 @@ def SMOTE_cat(data):
     return state
         
 #%%
-    
+   
+@ml_init
 def decisionTree(data):
     
     cross_score = 0
@@ -142,7 +144,7 @@ def oneHot(data):
 
     obj_df = data.select_dtypes('object')
     data = pd.get_dummies(data, columns=obj_df.columns)
-    print(data.head())
+    #print(data.head())
     return data
 
 #%%
@@ -273,6 +275,7 @@ def showMainMenu(state):
     
 #%%
 
+
 def showClassifyMenu(state, data):
     clear_screen()
     
@@ -281,7 +284,6 @@ def showClassifyMenu(state, data):
     print('q) Quit')
         
     getInput = input('What classifier would you like to model: ') 
-    clear_screen()
     
     if(getInput.lower() == 'a'):
         decisionTree(data)

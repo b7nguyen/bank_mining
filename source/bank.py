@@ -247,6 +247,8 @@ def showHistograms(df):
     
     plt.show()
 #%%
+
+#Nice work on boxplots Leah. Woot! -B
 @ml_init
 def showBoxPlots(df):
     #Extract numeric column names into a Series

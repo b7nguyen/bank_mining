@@ -21,6 +21,7 @@ from imblearn.over_sampling import SMOTENC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_val_score
 from sklearn import tree
+from pandas.api.types import is_numeric_dtype
 #from sklearn.tree.export import export_text
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
@@ -243,6 +244,50 @@ def showHistograms(df):
         
     
     plt.show()
+#%%
+@ml_init
+def showBoxPlots(df):
+    #Extract numeric column names into a Series
+    num_var = df.select_dtypes(include=[np.number])
+    
+    num_col_list = list(df.select_dtypes(include=[np.number]).columns.values)
+    
+    num_series = pd.Series(num_col_list)
+    
+    #Calculate how many subplots are needed 
+    count_num_list=len(num_col_list)
+    print (count_num_list)
+    
+    #Define the number of rows and columns for the subplots
+    if count_num_list %2 == 0:
+        col_count= int(count_num_list / 2)
+        row_count = int(count_num_list / col_count)
+        
+    else: 
+        make_even =count_num_list +1
+        col_count= int(make_even / 2)
+        row_count = int(make_even / col_count)
+        
+    #Create the subplots
+    fig, axes = plt.subplots(row_count, col_count, sharex=False, sharey=False, figsize=(20, 20))       
+        
+    #Create a boxplot for each numeric value column
+    counter = 0
+    
+    for column in df:
+        if is_numeric_dtype(df[column]) is True:
+            plot_position_x = counter // col_count
+            plot_position_y = counter % col_count
+            sns.boxplot(x="y", y= column, data=df, ax= axes[plot_position_x,plot_position_y])
+            print (column)
+            print(df.groupby(["y"])[column].describe()) 
+            counter += 1
+            
+        else:
+            continue 
+    plt.show()
+    
+    input('Press enter to continue')
 
 #%%
 
@@ -300,7 +345,8 @@ def showVisualizeMenu(state, data):
     
     print('a) Visualize Nominal Frequency')
     print('b) Visualize Numeric Attribute Histograms')
-    print('c) Show head of dataframe')
+    print('c) Visualize Boxplots')
+    print('d) Show head of dataframe')
     print('q) Quit')
     
     getInput = input('How would you like to visualize the data? ')  
@@ -312,8 +358,9 @@ def showVisualizeMenu(state, data):
     elif(getInput.lower() == 'b'):
         showHistograms(df)
     elif(getInput.lower() == 'c'):
-        showHead(df)
-        
+        showBoxPlots(df)
+    elif(getInput.lower() == 'd'):
+        showHead(df)    
     
     
     state = STATE_MAIN
@@ -324,8 +371,7 @@ def showPreProcessMenu(state, data):
     clear_screen()
         
     print('a) Balance the dataset with categorical values using SMOTENC')
-    print('b) Observe outlier boxplots')
-    print('c) One-hot encode all columns')
+    print('b) One-hot encode all columns')
     print('q) Quit')
     
     getInput = input('How would you like to pre-process the data? ')  
@@ -335,11 +381,9 @@ def showPreProcessMenu(state, data):
     if(getInput.lower() == 'a'):
         SMOTE_cat(data)
     elif(getInput.lower() == 'b'):
-        showHistograms(df)
-    elif(getInput.lower() == 'c'):
-        onehot(data)
+        print ('Building in Progress')
         
-    
+
     
     state = STATE_MAIN
     

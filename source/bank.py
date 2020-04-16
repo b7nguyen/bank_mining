@@ -15,21 +15,29 @@ import numpy as np
 import os
 '''import graphviz'''
 import pathlib
-import seaborn as sns
-import matplotlib.pyplot as plt
-from imblearn.over_sampling import SMOTENC
+
+
+
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_val_score
 from sklearn import tree
-from pandas.api.types import is_numeric_dtype
-#from sklearn.tree.export import export_text
+from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+from sklearn import metrics
+#from sklearn.tree.export import export_text
+
 from decorators import ml_init
 
 import seaborn as sns
+import seaborn as sns
+
+import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
 
+from pandas.api.types import is_numeric_dtype
+
+from imblearn.over_sampling import SMOTENC
 
 STATE_QUIT = -1
 STATE_MAIN= 0
@@ -113,7 +121,7 @@ def SMOTE_cat(data):
 #%%
    
 @ml_init
-def decisionTree(data):
+def ML_decisionTree(data):
     
     cross_score = 0
     n_folds = 10
@@ -131,6 +139,8 @@ def decisionTree(data):
                                   y=y_train, 
                                   cv=n_folds
                                   )
+    
+    #cross_score is an array of 10 scores. To get the score, we find the avg. 
     cross_score = round( (sum(cross_score[:])/cross_score.size) * 100, 2)
     
     clear_screen()
@@ -140,8 +150,39 @@ def decisionTree(data):
 
 #%%
 
+
+
+@ml_init
+def ML_naiveBayes(data):
+    gnb = GaussianNB()
+    score = 0 
+    target = data[TARGET_CLASS]
+    
+    data = data.drop([TARGET_CLASS], 1)
+    data = oneHot(data)  
+    X_train, X_test, y_train, y_test = splitData(data, target, .3)
+    
+    le = LabelEncoder()
+    target_encoded = le.fit_transform(target)
+    
+    gnb.fit(data, target)
+    y_pred = gnb.predict(data)
+    
+    score = round(metrics.accuracy_score(target, y_pred) * 100, 2)
+    
+    
+    print(f'Naive Bayes score is {score}\n')
+    input('Press enter to continue')  
+
+
+#%%
+
+'''
+Input: Input Dataframe with the class attribute removed. Ok to leave numeric 
+    Attributes in
+Output: Returns Dataframe with all nominal attributes encoded to binary values. 
+'''
 def oneHot(data):
-    #TBD
 
     obj_df = data.select_dtypes('object')
     data = pd.get_dummies(data, columns=obj_df.columns)
@@ -333,7 +374,9 @@ def showClassifyMenu(state, data):
     getInput = input('What classifier would you like to model: ') 
     
     if(getInput.lower() == 'a'):
-        decisionTree(data)
+        ML_decisionTree(data)
+    elif(getInput.lower() == 'b'):
+        ML_naiveBayes(data)
     
     
     state = STATE_MAIN

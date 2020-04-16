@@ -160,9 +160,9 @@ def showCategoricalData(df):
     #Create a Series with column headers
     cat_col= list(cat_var2.columns.values)
     cat_columns = pd.Series(cat_col)
-    
+    row_count, col_count = createSubPlots(cat_col)
     #Generate a 2 x 5 plot grid
-    fig, axs = plt.subplots(2, 5, sharex=False, sharey=False, figsize=(20, 20))       
+    fig, axs = plt.subplots(row_count, col_count, sharex=False, sharey=False, figsize=(20, 20))       
 
     counter = 0
     
@@ -172,8 +172,8 @@ def showCategoricalData(df):
         col_val = cat_var2[col_name].value_counts()
         
         #Define x,y position of each subplot for each column 
-        plot_position_x = counter // 5
-        plot_position_y = counter % 5
+        plot_position_x = counter // col_count
+        plot_position_y = counter % col_count
         x_pos = np.arange(len(col_val))
         
         #Create frequency graph of each unique val in the column
@@ -226,8 +226,9 @@ def showHistograms(df):
     num_col= list(num_var.columns.values)
     num_series = pd.Series(num_col)
     
+    row_count, col_count = createSubPlots(num_col)
     #Generate a 2 x 5 plot grid
-    fig, axs = plt.subplots(2, 5, sharex=False, sharey=False, figsize=(30, 10))       
+    fig, axs = plt.subplots(row_count, col_count, sharex=False, sharey=False, figsize=(30, 10))       
     
     #Create histogram for each numeric attribute column
     counter = 0
@@ -235,8 +236,8 @@ def showHistograms(df):
         col_name = x
         
         #Define x,y position of each subplot for each column 
-        plot_position_x = counter // 5
-        plot_position_y = counter % 5
+        plot_position_x = counter // col_count
+        plot_position_y = counter % col_count
         
         #Create histogram for the column 
         axs[plot_position_x,plot_position_y].hist(num_var[col_name])
@@ -246,21 +247,10 @@ def showHistograms(df):
         
     
     plt.show()
-#%%
 
-#Nice work on boxplots Leah. Woot! -B
-@ml_init
-def showBoxPlots(df):
-    #Extract numeric column names into a Series
-    num_var = df.select_dtypes(include=[np.number])
-    
-    num_col_list = list(df.select_dtypes(include=[np.number]).columns.values)
-    
-    num_series = pd.Series(num_col_list)
-    
-    #Calculate how many subplots are needed 
-    count_num_list=len(num_col_list)
-    print (count_num_list)
+#%%
+def createSubPlots(list):
+    count_num_list=len(list)
     
     #Define the number of rows and columns for the subplots
     if count_num_list %2 == 0:
@@ -271,11 +261,20 @@ def showBoxPlots(df):
         make_even =count_num_list +1
         col_count= int(make_even / 2)
         row_count = int(make_even / col_count)
-        
+    
+    return row_count, col_count
+#%%
+
+@ml_init
+def showBoxPlots(df):
+    #Calculate how many subplots are needed
+    num_col_list = list(df.select_dtypes(include=[np.number]).columns.values)     
+    row_count, col_count = createSubPlots(num_col_list)
+    
     #Create the subplots
     fig, axes = plt.subplots(row_count, col_count, sharex=False, sharey=False, figsize=(20, 20))       
         
-    #Create a boxplot for each numeric value column
+    #Create a boxplot in each subplot for each numeric value column
     counter = 0
     
     for column in df:

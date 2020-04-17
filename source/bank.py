@@ -10,7 +10,7 @@ Created on Tue Feb 25 18:30:59 2020
 """
 Get Library
 """
-import pandas as pd
+
 import numpy as np
 import os
 '''import graphviz'''
@@ -35,9 +35,12 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
 
+import pandas as pd
 from pandas.api.types import is_numeric_dtype
 
 from imblearn.over_sampling import SMOTENC
+
+from bank_class import MyFrame
 
 STATE_QUIT = -1
 STATE_MAIN= 0
@@ -72,7 +75,8 @@ def readCSVFile(filename):
     file = PATH + filename
     return (pd.read_csv(file))
 #%%
-def reshape_data(data):
+def reshape_data(DFmain):
+    data = DFmain.dframe
     dataset = data.values
     #Defining X as all columns except the last column
     X = dataset[:, :-1]
@@ -86,14 +90,16 @@ def reshape_data(data):
 
 #%%
 #NEEDS to be generalized- categorical feature indices specifically
-def SMOTE_cat(data):
-    X, y = reshape_data(data)
+def SMOTE_cat(DFmain):
+    data = DFmain
+    X, y = reshape_data(DFmain)
     
     X_train, X_test, y_train, y_test = splitData(X,y, test_size= .33)
         
     sm = SMOTENC(categorical_features=[1,2,3,4,5,6,7,8,9,14],random_state= 1,
              sampling_strategy ='minority') 
     X_train_smote, y_train_smote = sm.fit_sample(X_train, y_train.ravel())
+    
     
     print("Before SMOTE, counts of label 'yes': {}".format(sum(y_train 
                                                                  == 'yes')))
@@ -121,10 +127,11 @@ def SMOTE_cat(data):
 #%%
    
 @ml_init
-def ML_decisionTree(data):
+def ML_decisionTree(DFmain):
     
     cross_score = 0
     n_folds = 10
+    data = DFmain.dframe
     
     target = data[TARGET_CLASS]
     data = data.drop([TARGET_CLASS], 1)
@@ -153,7 +160,8 @@ def ML_decisionTree(data):
 
 
 @ml_init
-def ML_naiveBayes(data):
+def ML_naiveBayes(DFmain):
+    data = DFmain.dframe
     gnb = GaussianNB()
     score = 0 
     target = data[TARGET_CLASS]
@@ -335,7 +343,7 @@ def showBoxPlots(df):
 
 #%%
 
-def showMainMenu(state):
+def showMainMenu(DFmain, state):
     clear_screen()
     
     if (state == STATE_MAIN):
@@ -363,7 +371,7 @@ def showMainMenu(state):
 #%%
 
 
-def showClassifyMenu(state, data):
+def showClassifyMenu(DFmain, state):
     clear_screen()
     
     print('a) Decision Tree')
@@ -373,9 +381,9 @@ def showClassifyMenu(state, data):
     getInput = input('What classifier would you like to model: ') 
     
     if(getInput.lower() == 'a'):
-        ML_decisionTree(data)
+        ML_decisionTree(DFmain)
     elif(getInput.lower() == 'b'):
-        ML_naiveBayes(data)
+        ML_naiveBayes(DFmain)
     
     
     state = STATE_MAIN
@@ -413,8 +421,10 @@ def showVisualizeMenu(state, data):
     
     return state
 #%%
-def showPreProcessMenu(state, data):
+def showPreProcessMenu(DFmain, state):
+    data = DFmain.dframe
     clear_screen()
+    
         
     print('a) Balance the dataset with categorical values using SMOTENC')
     print('b) One-hot encode all columns')
@@ -425,7 +435,7 @@ def showPreProcessMenu(state, data):
     clear_screen()
     
     if(getInput.lower() == 'a'):
-        SMOTE_cat(data)
+        SMOTE_cat(DFmain)
     elif(getInput.lower() == 'b'):
         print ('Building in Progress')
         
@@ -460,9 +470,12 @@ if __name__ == '__main__':
     
     data = pd.DataFrame()
     
+    
 
     '''Get the data from CSV file'''
     data = readCSVFile(FILETRAIN)
+    DFmain = MyFrame(data)
+
     
     state = STATE_MAIN
     clear_screen()
@@ -470,13 +483,13 @@ if __name__ == '__main__':
     while(True):
         
         if(state == STATE_MAIN):
-            state = showMainMenu(state)
+            state = showMainMenu(DFmain, state)
         elif(state == STATE_CLASSIFY):
-            state = showClassifyMenu(state, data)
+            state = showClassifyMenu(DFmain, state)
         elif(state == STATE_VISUALIZE):
             state = showVisualizeMenu(state, data)
         elif(state == STATE_PREPROCESS):
-             state = showPreProcessMenu(state,data)
+             state = showPreProcessMenu(DFmain, state)
         else:
             break
             

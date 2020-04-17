@@ -15,19 +15,29 @@ import numpy as np
 import os
 '''import graphviz'''
 import pathlib
-import seaborn as sns
-import matplotlib.pyplot as plt
-from imblearn.over_sampling import SMOTENC
+
+
+
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_val_score
 from sklearn import tree
-#from sklearn.tree.export import export_text
+from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+from sklearn import metrics
+#from sklearn.tree.export import export_text
+
+from decorators import ml_init
 
 import seaborn as sns
+import seaborn as sns
+
+import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
 
+from pandas.api.types import is_numeric_dtype
+
+from imblearn.over_sampling import SMOTENC
 
 STATE_QUIT = -1
 STATE_MAIN= 0
@@ -109,8 +119,9 @@ def SMOTE_cat(data):
     return state
         
 #%%
-    
-def decisionTree(data):
+   
+@ml_init
+def ML_decisionTree(data):
     
     cross_score = 0
     n_folds = 10
@@ -128,6 +139,8 @@ def decisionTree(data):
                                   y=y_train, 
                                   cv=n_folds
                                   )
+    
+    #cross_score is an array of 10 scores. To get the score, we find the avg. 
     cross_score = round( (sum(cross_score[:])/cross_score.size) * 100, 2)
     
     clear_screen()
@@ -137,12 +150,43 @@ def decisionTree(data):
 
 #%%
 
+
+
+@ml_init
+def ML_naiveBayes(data):
+    gnb = GaussianNB()
+    score = 0 
+    target = data[TARGET_CLASS]
+    
+    data = data.drop([TARGET_CLASS], 1)
+    data = oneHot(data)  
+    X_train, X_test, y_train, y_test = splitData(data, target, .3)
+    
+    le = LabelEncoder()
+    target_encoded = le.fit_transform(target)
+    
+    gnb.fit(data, target)
+    y_pred = gnb.predict(data)
+    
+    score = round(metrics.accuracy_score(target, y_pred) * 100, 2)
+    
+    
+    print(f'Naive Bayes score is {score}\n')
+    input('Press enter to continue')  
+
+
+#%%
+
+'''
+Input: Input Dataframe with the class attribute removed. Ok to leave numeric 
+    Attributes in
+Output: Returns Dataframe with all nominal attributes encoded to binary values. 
+'''
 def oneHot(data):
-    #TBD
 
     obj_df = data.select_dtypes('object')
     data = pd.get_dummies(data, columns=obj_df.columns)
-    print(data.head())
+    #print(data.head())
     return data
 
 #%%
@@ -243,6 +287,52 @@ def showHistograms(df):
         
     
     plt.show()
+#%%
+
+#Nice work on boxplots Leah. Woot! -B
+@ml_init
+def showBoxPlots(df):
+    #Extract numeric column names into a Series
+    num_var = df.select_dtypes(include=[np.number])
+    
+    num_col_list = list(df.select_dtypes(include=[np.number]).columns.values)
+    
+    num_series = pd.Series(num_col_list)
+    
+    #Calculate how many subplots are needed 
+    count_num_list=len(num_col_list)
+    print (count_num_list)
+    
+    #Define the number of rows and columns for the subplots
+    if count_num_list %2 == 0:
+        col_count= int(count_num_list / 2)
+        row_count = int(count_num_list / col_count)
+        
+    else: 
+        make_even =count_num_list +1
+        col_count= int(make_even / 2)
+        row_count = int(make_even / col_count)
+        
+    #Create the subplots
+    fig, axes = plt.subplots(row_count, col_count, sharex=False, sharey=False, figsize=(20, 20))       
+        
+    #Create a boxplot for each numeric value column
+    counter = 0
+    
+    for column in df:
+        if is_numeric_dtype(df[column]) is True:
+            plot_position_x = counter // col_count
+            plot_position_y = counter % col_count
+            sns.boxplot(x="y", y= column, data=df, ax= axes[plot_position_x,plot_position_y])
+            print (column)
+            print(df.groupby(["y"])[column].describe()) 
+            counter += 1
+            
+        else:
+            continue 
+    plt.show()
+    
+    input('Press enter to continue')
 
 #%%
 
@@ -273,6 +363,7 @@ def showMainMenu(state):
     
 #%%
 
+
 def showClassifyMenu(state, data):
     clear_screen()
     
@@ -281,10 +372,11 @@ def showClassifyMenu(state, data):
     print('q) Quit')
         
     getInput = input('What classifier would you like to model: ') 
-    clear_screen()
     
     if(getInput.lower() == 'a'):
-        decisionTree(data)
+        ML_decisionTree(data)
+    elif(getInput.lower() == 'b'):
+        ML_naiveBayes(data)
     
     
     state = STATE_MAIN
@@ -300,7 +392,8 @@ def showVisualizeMenu(state, data):
     
     print('a) Visualize Nominal Frequency')
     print('b) Visualize Numeric Attribute Histograms')
-    print('c) Show head of dataframe')
+    print('c) Visualize Boxplots')
+    print('d) Show head of dataframe')
     print('q) Quit')
     
     getInput = input('How would you like to visualize the data? ')  
@@ -312,8 +405,9 @@ def showVisualizeMenu(state, data):
     elif(getInput.lower() == 'b'):
         showHistograms(df)
     elif(getInput.lower() == 'c'):
-        showHead(df)
-        
+        showBoxPlots(df)
+    elif(getInput.lower() == 'd'):
+        showHead(df)    
     
     
     state = STATE_MAIN
@@ -324,8 +418,7 @@ def showPreProcessMenu(state, data):
     clear_screen()
         
     print('a) Balance the dataset with categorical values using SMOTENC')
-    print('b) Observe outlier boxplots')
-    print('c) One-hot encode all columns')
+    print('b) One-hot encode all columns')
     print('q) Quit')
     
     getInput = input('How would you like to pre-process the data? ')  
@@ -335,11 +428,9 @@ def showPreProcessMenu(state, data):
     if(getInput.lower() == 'a'):
         SMOTE_cat(data)
     elif(getInput.lower() == 'b'):
-        showHistograms(df)
-    elif(getInput.lower() == 'c'):
-        onehot(data)
+        print ('Building in Progress')
         
-    
+
     
     state = STATE_MAIN
     

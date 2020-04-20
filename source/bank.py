@@ -376,17 +376,19 @@ def showClassifyMenu(DFmain, state):
     
     print('a) Decision Tree')
     print('b) Naive Bayes')
-    print('q) Quit')
+    print('q) Back to Main')
         
     getInput = input('What classifier would you like to model: ') 
+    gotInput = getInput.lower()
     
-    if(getInput.lower() == 'a'):
+    
+    if(getInput == 'a'):
         ML_decisionTree(DFmain)
-    elif(getInput.lower() == 'b'):
+    elif(getInput == 'b'):
         ML_naiveBayes(DFmain)
-    
-    
-    state = STATE_MAIN
+    elif(getInput == 'q'):
+        state = STATE_MAIN
+        
         
     return state
     

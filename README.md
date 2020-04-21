@@ -1,6 +1,3 @@
-# bank_mining
-Mining of bank dataset
+# Machine Learning Pipeline
 
-Before running do the following
-
-1. Point working dirctory to the source folder
+A collaborative project to develop and optimize data pre-processing, visualization, and modeling of a dataset made of tabular string/numeric data. 

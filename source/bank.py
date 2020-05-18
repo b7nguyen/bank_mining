@@ -75,6 +75,12 @@ def readCSVFile(filename):
     file = PATH + filename
     return (pd.read_csv(file))
 #%%
+#Renames specific column
+def rename(DFmain, current_col, new_col):
+    data  = DFmain.dframe
+    data = data.rename(columns = {current_col,new_col})
+    return data
+#%%
 def reshape_data(DFmain):
     data = DFmain.dframe
     dataset = data.values
@@ -91,7 +97,14 @@ def reshape_data(DFmain):
 #%%
 #NEEDS to be generalized- categorical feature indices specifically
 def SMOTE_cat(DFmain):
-    data = DFmain
+    data = DFmain.dframe
+    
+    #Create list of all column names
+    list_col = list(data.columns)
+    
+    #Create list of column names in X_train
+    x_train_col = list_col[0:(len(list_col)-1)]
+    
     X, y = reshape_data(DFmain)
     
     X_train, X_test, y_train, y_test = splitData(X,y, test_size= .33)
@@ -109,6 +122,14 @@ def SMOTE_cat(DFmain):
                                                            == 'yes'))
     print("After SMOTE, counts of Class attr 'No': ", sum(y_train_smote 
                                                           == 'no'))
+    #Convert SMOTE processed ndarrays back into a dataframe
+    SMOTE_train_df = pd.DataFrame(data= X_train_smote, index= None, columns = 
+                          x_train_col )
+    #Convert Y training set into a Series and add on to dataframe
+    Y_train_series= pd.Series(y_train_smote)
+    
+    SMOTE_train_df = SMOTE_train_df.assign(y = Y_train_series)
+    
     
     print('\n\na) Go back to main menu')
     print('b) Go back to pre-processing menu')
@@ -122,7 +143,7 @@ def SMOTE_cat(DFmain):
         state = STATE_PREPROCESS
         showPreProcessMenu(state,data)
         
-    return state
+    return state, SMOTE_train_df
         
 #%%
    

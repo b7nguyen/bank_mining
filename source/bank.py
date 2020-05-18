@@ -75,6 +75,12 @@ def readCSVFile(filename):
     file = PATH + filename
     return (pd.read_csv(file))
 #%%
+#Renames specific column
+def rename(DFmain, current_col, new_col):
+    data  = DFmain.dframe
+    data = data.rename(columns = {current_col,new_col})
+    return data
+#%%
 def reshape_data(DFmain):
     data = DFmain.dframe
     dataset = data.values
@@ -95,10 +101,9 @@ def SMOTE_cat(DFmain):
     
     #Create list of all column names
     list_col = list(data.columns)
-    print (list_col)
+    
     #Create list of column names in X_train
     x_train_col = list_col[0:(len(list_col)-1)]
-    print (x_train_col)
     
     X, y = reshape_data(DFmain)
     
@@ -123,7 +128,7 @@ def SMOTE_cat(DFmain):
     #Convert Y training set into a Series and add on to dataframe
     Y_train_series= pd.Series(y_train_smote)
     
-    SMOTE_train_df = X_train_df.assign(y = Y_train_series)
+    SMOTE_train_df = SMOTE_train_df.assign(y = Y_train_series)
     
     
     print('\n\na) Go back to main menu')
